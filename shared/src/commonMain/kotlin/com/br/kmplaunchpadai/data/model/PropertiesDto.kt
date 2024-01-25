@@ -2,6 +2,8 @@ package com.br.kmplaunchpadai.data.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+
+// FIXME - here, this needs to be dynamic
 @Serializable
 data class PropertiesDto(
     @SerialName("date") val date: DateDto,
