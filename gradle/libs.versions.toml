@@ -4,6 +4,8 @@ dokka = "1.9.10"
 kotlin = "1.9.21"
 ktLint-gradle = "11.6.1"
 kermit = "2.0.2"
+ktor = "2.3.6"
+ksp = "1.9.20-1.0.14"
 
 # Versioning for build scripts
 compile-sdk = "34"
@@ -15,6 +17,13 @@ launchpad-ai = "0.1.0"
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
+ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor" }
+ktor-serialization-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 
 [plugins]
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
@@ -22,3 +31,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktLint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktLint-gradle" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

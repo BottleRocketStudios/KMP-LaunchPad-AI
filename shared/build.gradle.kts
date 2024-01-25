@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.ktLint)
     `maven-publish`
 }
@@ -33,11 +34,20 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
-        }
-        commonTest.dependencies {
             implementation(libs.kermit)
+
+            implementation(libs.ktor)
+            implementation(libs.ktor.content.negotiation)
+            implementation(libs.ktor.logging)
+            implementation(libs.ktor.serialization.json)        }
+        commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }
