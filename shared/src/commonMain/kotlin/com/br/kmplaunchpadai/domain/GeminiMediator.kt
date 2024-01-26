@@ -31,11 +31,19 @@ fun test() {
             functionDeclaration {
                 description { "BLA" }
                 name { "Name" }
+                parameters {
+                    parameter {
+                        name { "name" }
+                        description { "String" }
+                        required { true }
+                        functionReference { ExampleFunctions::findMovies }
+                    }
+                }
             }
         }
     }
 
-    geminiMediator.chat("hey bot whats up.")
-    geminiMediator.response
+//    geminiMediator.chat("hey bot whats up.")
+//    geminiMediator.response
 
 }
