@@ -1,7 +1,7 @@
 package com.br.kmplaunchpadai.data.converters
 
 import com.br.kmplaunchpadai.data.model.ParametersDto
-import com.br.kmplaunchpadai.domain.model.GeminiParameter
+import com.br.kmplaunchpadai.domain.mediator.GeminiParameter
 
 fun ParametersDto.toParameterList() =
     properties.map { (name, value) ->

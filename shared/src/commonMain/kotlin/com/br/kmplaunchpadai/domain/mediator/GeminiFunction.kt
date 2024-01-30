@@ -1,4 +1,4 @@
-package com.br.kmplaunchpadai.domain.model
+package com.br.kmplaunchpadai.domain.mediator
 
 import kotlin.reflect.KFunction1
 
@@ -30,31 +30,24 @@ class GeminiFunction {
         functionReference = init()
     }
 
-//    TODO - write function to call function reference
-    fun call() {
-
+    fun call(): Any? {
+        val params = mutableMapOf<String, Any>()
+        parameters.forEach { parameter ->
+            parameter.value?.let {
+                params[parameter.name] = it
+            } ?: if (parameter.required) { throw IllegalArgumentException("Missing Param ${parameter.name}") } else null;
+        }
+        return functionReference.invoke(params)
     }
 }
 
-class ParameterScope {
-    private var name = ""
-    private var description = ""
-    private var required: Boolean = false
+// TODO - Do we need function scope ??
+class FunctionScope() {
 
-    fun name(init: () -> String) {
-        name = init()
-    }
-
-    fun description(init: () -> String) {
-        description = init()
-    }
-
-    fun required(init: () -> Boolean) {
-        required = init()
-    }
-
-    fun getParameter() = GeminiParameter(name, description, required)
 }
+
+
+
 
 
 

@@ -1,30 +1,9 @@
-package com.br.kmplaunchpadai.domain
+package com.br.kmplaunchpadai.domain.mediator
 
-import com.br.kmplaunchpadai.domain.model.GeminiFunction
-
-class GeminiMediator {
-
-    private val tools: MutableList<GeminiFunction> = mutableListOf()
-
-    operator fun invoke(init: GeminiMediator.() -> Unit)  {
-        init()
-    }
-//     TODO create DSL to populating tools
-
-//    MOVE TOOLS into its own class
-    fun tools(init: GeminiMediator.() -> Unit) {
-        init()
-    }
+import com.br.kmplaunchpadai.domain.ExampleFunctions
 
 
-    fun functionDeclaration(init: GeminiFunction.() -> Unit) {
-        val gFunc = GeminiFunction()
-        GeminiFunction().init()
-        tools.add(gFunc)
-    }
-}
-
-fun test() {
+suspend fun test() {
     val geminiMediator = GeminiMediator()
     geminiMediator {
         tools {
@@ -42,6 +21,9 @@ fun test() {
             }
         }
     }
+
+    geminiMediator.startChat()
+    geminiMediator.user.value = "Hi. Are you there???"
 
 //    geminiMediator.chat("hey bot whats up.")
 //    geminiMediator.response
