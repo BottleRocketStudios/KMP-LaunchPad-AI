@@ -6,18 +6,14 @@ import com.br.kmplaunchpadai.domain.ExampleFunctions
 suspend fun test() {
     val geminiMediator = GeminiMediator()
     geminiMediator {
-        tools {
-            functionDeclaration {
-                description { "BLA" }
-                name { "Name" }
-                parameters {
-                    parameter {
-                        name { "name" }
-                        description { "String" }
-                        required { true }
-                        functionReference { ExampleFunctions::findMovies }
-                    }
-                }
+        functionDeclaration {
+            description { "BLA" }
+            name { "Name" }
+            parameter {
+                name { "name" }
+                description { "String" }
+                required { true }
+                functionReference { ExampleFunctions::findMovies }
             }
         }
     }

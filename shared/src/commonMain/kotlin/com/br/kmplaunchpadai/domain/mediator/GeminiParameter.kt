@@ -1,28 +1,39 @@
 package com.br.kmplaunchpadai.domain.mediator
 
-class GeminiParameter(
-    val name: String,
-    val description: String,
-    val required: Boolean,
-    var value: Any? = null,
-)
+/**
+ * Represents a parameter for a Gemini function.
+ */
+class GeminiParameter {
+    var name: String = ""
+    var description: String = ""
+    var required: Boolean = false
+    var value: Any? = null
 
-class ParameterScope {
-    private var name = ""
-    private var description = ""
-    private var required: Boolean = false
-
+    /**
+     * Sets the name of the parameter.
+     *
+     * @param init A lambda that returns the name of the parameter.
+     */
     fun name(init: () -> String) {
         name = init()
     }
 
+    /**
+     * Sets the description of the parameter.
+     *
+     * @param init A lambda that returns the description of the parameter.
+     */
     fun description(init: () -> String) {
         description = init()
     }
 
+    /**
+     * Sets whether the parameter is required.
+     *
+     * @param init A lambda that returns whether the parameter is required.
+     */
     fun required(init: () -> Boolean) {
         required = init()
     }
 
-    fun getParameter() = GeminiParameter(name, description, required)
 }
