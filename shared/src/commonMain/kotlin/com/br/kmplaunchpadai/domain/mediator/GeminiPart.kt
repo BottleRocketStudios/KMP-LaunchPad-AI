@@ -4,5 +4,4 @@ class GeminiPart(
     var functionCall: GeminiFunction? = null,
     var text: String? = null,
     var functionResponse: GeminiResponse? = null
-) {
-}
+)

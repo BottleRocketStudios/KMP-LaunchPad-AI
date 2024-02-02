@@ -1,7 +1,5 @@
 package com.br.kmplaunchpadai.data.network
 
-import com.bottlerocketstudios.ignitedomain.domain.model.ApiException
-import com.bottlerocketstudios.kmpignite.data.BuildKonfig
 import com.br.kmplaunchpadai.domain.model.ApiException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -11,11 +9,9 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
-import io.ktor.client.request.headers
 import io.ktor.http.URLProtocol
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.util.appendIfNameAbsent
 import kotlinx.serialization.json.Json
 
 fun ktorClient(): HttpClient = HttpClient {

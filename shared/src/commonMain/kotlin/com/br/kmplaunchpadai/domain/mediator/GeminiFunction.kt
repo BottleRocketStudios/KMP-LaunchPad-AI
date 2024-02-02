@@ -6,9 +6,9 @@ import kotlin.reflect.KFunction1
  * Represents a Gemini function.
  */
 class GeminiFunction {
-    private var description: String? = null
-    private var name: String? = null
-    private var parameters: List<GeminiParameter> = emptyList()
+    var description: String? = null
+    var name: String? = null
+    var parameters: List<GeminiParameter> = emptyList()
     private lateinit var functionReference: KFunction1<Map<String, Any>, Any?>
 
     /**

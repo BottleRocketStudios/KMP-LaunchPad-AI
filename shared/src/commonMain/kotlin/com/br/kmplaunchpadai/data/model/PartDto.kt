@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PartDto(
-    @SerialName("functionCall") val functionCall: FunctionCallDto?,
-    @SerialName("functionResponse") val functionResponse: FunctionResponseDto?,
-    @SerialName("text") val text: String?,
+    @SerialName("functionCall") val functionCall: FunctionCallDto? = null,
+    @SerialName("functionResponse") val functionResponse: FunctionResponseDto? = null,
+    @SerialName("text") val text: String? = null,
 ) : Dto

@@ -1,10 +1,17 @@
 package com.br.kmplaunchpadai.domain.mediator
 
+import com.br.kmplaunchpadai.data.converters.toDto
+import com.br.kmplaunchpadai.data.model.ContentDto
+import com.br.kmplaunchpadai.data.model.ConversationRequestDto
+import com.br.kmplaunchpadai.data.model.PartDto
+import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-
 class GeminiMediator {
+    // Service
+    private val geminiService = GeminiService()
+
     // State
     private val conversation: MutableList<GeminiContent> = mutableListOf()
     private val functions: MutableList<GeminiFunction> = mutableListOf()
@@ -40,6 +47,11 @@ class GeminiMediator {
 
     private fun callGemini() {
 
+        geminiService.callGemini(createConversationRequestDto())
+    }
+
+    private fun createConversationRequestDto(): ConversationRequestDto {
+        return ConversationRequestDto(conversation.toDto(), functions.toDto())
     }
 
 
@@ -49,3 +61,6 @@ class GeminiMediator {
     }
 
 }
+
+
+
