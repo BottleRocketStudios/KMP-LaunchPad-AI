@@ -7,7 +7,6 @@ class GeminiParameter {
     var name: String = ""
     var description: String = ""
     var required: Boolean = false
-    var value: Any? = null
 
     /**
      * Sets the name of the parameter.
