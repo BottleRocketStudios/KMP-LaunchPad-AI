@@ -7,6 +7,8 @@ import com.br.kmplaunchpadai.data.model.ToolDto
 import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class GeminiMediator {
     // Service
@@ -15,6 +17,7 @@ class GeminiMediator {
     // State
     private val conversation: MutableList<GeminiContent> = mutableListOf()
     private val geminiFunctions: MutableList<GeminiFunction> = mutableListOf()
+    private val mutex = Mutex()
 
     // Input flow
     val user: MutableStateFlow<String> = MutableStateFlow("")
@@ -22,6 +25,9 @@ class GeminiMediator {
     // Output
     private val _conversationFlow = MutableStateFlow(GeminiContent(MODEL, GeminiPart(text = "Welcome to das BOT:")))
     val conversationFlow: StateFlow<GeminiContent> = _conversationFlow
+
+    private val _errorString: MutableStateFlow<String> = MutableStateFlow("")
+    val errorString: StateFlow<String> = _errorString
 
     // Methods
     operator fun invoke(init: GeminiMediator.() -> Unit)  {
@@ -39,32 +45,57 @@ class GeminiMediator {
             val content = GeminiContent(USER, GeminiPart(text = userInput))
             conversation.add(content)
             _conversationFlow.emit(content)
-            geminiService.callGemini(createConversationRequestDto()).onSuccess { response ->
+            mutex.withLock {
+                callGemini()
+            }
+        }
+    }
 
-//                FIXME - What if there is no function call ???  Process text first and output to conversation and UI
+      private suspend fun callGemini() {
+//        TODO - Add escape logic to prevent infinite loop
 
-                response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.functionCall?.let { functionCall ->
-                    conversation.add(
-                        GeminiContent(
-                            role = "model",
-                            part = GeminiPart(
-                                functionCall = GeminiFunctionCall(
-                                    name = functionCall.name,
-                                    args = functionCall.args
-                                )
+        geminiService.callGemini(createConversationRequestDto()).onSuccess { response ->
+
+            response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text?.let {
+                val element = GeminiContent(
+                    role = "model",
+                    part = GeminiPart(text = it)
+                )
+                conversation.add(element)
+                _conversationFlow.emit(element)
+            }
+
+            response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.functionCall?.let { functionCall ->
+                conversation.add(
+                    GeminiContent(
+                        role = "model",
+                        part = GeminiPart(
+                            functionCall = GeminiFunctionCall(
+                                name = functionCall.name,
+                                args = functionCall.args
                             )
                         )
                     )
+                )
 
-                    val functionResponse = geminiFunctions.find { it.name == functionCall.name }?.call(functionCall.args)
-                    TODO("process API response and add to conversation")
-                    TODO("Call Gemini again")
-                    TODO("process Gemini response and add to conversation")
-                }
+                val functionResponse = geminiFunctions.find { it.name == functionCall.name }?.call(functionCall.args)
+                conversation.add(
+                    GeminiContent(
+                        role = "model",
+                        part = GeminiPart(
+                            functionResponse = GeminiResponse(
+                                name = functionCall.name,
+                                content = functionResponse
+                            )
+                        )
+                    )
+                )
 
-            }.onFailure {
-                TODO("Not yet implemented")
+                callGemini()
             }
+
+        }.onFailure {
+            _errorString.value = it.message.toString()
         }
     }
 
@@ -79,7 +110,3 @@ class GeminiMediator {
     }
 
 }
-
-
-
-

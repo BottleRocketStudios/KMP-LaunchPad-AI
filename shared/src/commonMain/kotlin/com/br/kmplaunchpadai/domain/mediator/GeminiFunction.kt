@@ -9,7 +9,7 @@ class GeminiFunction {
     var description: String = ""
     var name: String = ""
     var parameters: List<GeminiParameter> = emptyList()
-    private lateinit var functionReference: KFunction1<Map<String, Any>, Any?>
+    private lateinit var functionReference: KFunction1<Map<String, Any>, Map<String, Any>>
 
     /**
      * Sets the name of the function.
@@ -47,7 +47,7 @@ class GeminiFunction {
      *
      * @param init A lambda that returns the function reference.
      */
-    fun functionReference(init: () -> KFunction1<Map<String, Any>, Any?>) {
+    fun functionReference(init: () -> KFunction1<Map<String, Any>, Map<String, Any>>) {
         functionReference = init()
     }
 
@@ -56,23 +56,5 @@ class GeminiFunction {
      *
      * @return The result of the function call.
      */
-    fun call(params: Map<String, Any>): Any? {
-        // Create a mutable map to store the parameters.
-//        val params = mutableMapOf<String, Any>()
-//
-//        // Iterate over the parameters and add them to the map.
-//        parameters.forEach { parameter ->
-//            // If the parameter has a value, add it to the map.
-//            parameter.value?.let {
-//                params[parameter.name] = it
-//            }
-//            // If the parameter is required and does not have a value, throw an exception.
-//                ?: if (parameter.required) {
-//                    throw IllegalArgumentException("Missing Param ${parameter.name}")
-//                } else null;
-//        }
-
-        // Call the function and return the result.
-        return functionReference.invoke(params)
-    }
+    fun call(params: Map<String, Any>) = functionReference.invoke(params)
 }
