@@ -30,7 +30,7 @@ class GeminiMediator {
     val errorString: StateFlow<String> = _errorString
 
     // Methods
-    operator fun invoke(init: GeminiMediator.() -> Unit)  {
+    operator fun invoke(init: GeminiMediator.() -> Unit) {
         init()
     }
 
@@ -62,7 +62,7 @@ class GeminiMediator {
                     part = GeminiPart(text = it)
                 )
                 conversation.add(element)
-                _conversationFlow.emit(element)
+                _conversationFlow.value = element
             }
 
             response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.functionCall?.let { functionCall ->
@@ -101,7 +101,7 @@ class GeminiMediator {
 
 
     private fun createConversationRequestDto() =
-        ConversationRequestDto(conversation.toDto(), listOf(ToolDto( geminiFunctions.toDto())))
+        ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toDto())))
 
 
     companion object {
