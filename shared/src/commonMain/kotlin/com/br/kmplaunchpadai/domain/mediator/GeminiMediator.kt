@@ -1,8 +1,8 @@
 package com.br.kmplaunchpadai.domain.mediator
 
 import com.br.kmplaunchpadai.data.converters.toDto
+import com.br.kmplaunchpadai.data.converters.toFunctionDeclarationDto
 import com.br.kmplaunchpadai.data.model.ConversationRequestDto
-import com.br.kmplaunchpadai.data.model.FunctionCallDto
 import com.br.kmplaunchpadai.data.model.ToolDto
 import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,7 +101,7 @@ class GeminiMediator {
 
 
     private fun createConversationRequestDto() =
-        ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toDto())))
+        ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toFunctionDeclarationDto())))
 
 
     companion object {

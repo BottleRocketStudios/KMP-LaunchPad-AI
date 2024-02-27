@@ -38,7 +38,7 @@ fun GeminiResponse.toDto() = FunctionResponseDto(
     )
 )
 
-fun MutableList<GeminiFunction>.toDto() = map { it.toDto() }
+fun MutableList<GeminiFunction>.toFunctionDeclarationDto() = map { it.toDto() }
 
 fun GeminiFunction.toDto() = FunctionDeclarationDto(
     description = description,
