@@ -65,8 +65,8 @@ Now that you have generated your PAT, you'll need to configure it on your local 
 - Run the following commands, replacing YOUR_TOKEN_HERE with the actual token you copied:
 
 ```bash
-export REPO_READ_USER=YOUR_TOKEN_HERE
-export REPO_READ_TOKEN=your-github-email@example.com
+export REPO_READ_WRITE_USER=YOUR_TOKEN_HERE
+export REPO_READ_WRITE_TOKEN=your-github-email@example.com
 ```
 
 Alternatively, you can add these lines to your shell profile file (e.g., .bashrc, .zshrc, or .bash_profile) to make them persistent.
@@ -76,8 +76,8 @@ Alternatively, you can add these lines to your shell profile file (e.g., .bashrc
 - To verify that your environment variables are set correctly, you can echo them in the terminal:
 
 ```bash
-echo $REPO_READ_USER
-echo $REPO_READ_TOKEN
+echo REPO_READ_WRITE_USER
+echo REPO_READ_WRITE_TOKEN
 ```
 
 You should see the values you set.
