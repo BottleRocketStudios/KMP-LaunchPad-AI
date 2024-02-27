@@ -20,7 +20,7 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -39,7 +39,8 @@ kotlin {
             implementation(libs.ktor)
             implementation(libs.ktor.content.negotiation)
             implementation(libs.ktor.logging)
-            implementation(libs.ktor.serialization.json)        }
+            implementation(libs.ktor.serialization.json)
+        }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
@@ -75,11 +76,9 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/BottleRocketStudios/KMP-LaunchPad-AI")
             credentials {
-                username = System.getenv("GITHUB_ACTOR") ?: System.getenv("REPO_WRITE_USERNAME")
-                password = System.getenv("GITHUB_TOKEN") ?: System.getenv("REPO_WRITE_TOKEN")
+                username = System.getenv("REPO_READ_WRITE_USER")
+                password = System.getenv("REPO_READ_WRITE_TOKEN")
             }
         }
     }
 }
-
-

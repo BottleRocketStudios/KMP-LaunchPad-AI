@@ -51,7 +51,7 @@ class GeminiMediator {
         }
     }
 
-      private suspend fun callGemini() {
+    private suspend fun callGemini() {
 //        TODO - Add escape logic to prevent infinite loop
 
         geminiService.callGemini(createConversationRequestDto()).onSuccess { response ->
@@ -93,20 +93,16 @@ class GeminiMediator {
 
                 callGemini()
             }
-
         }.onFailure {
             _errorString.value = it.message.toString()
         }
     }
 
-
     private fun createConversationRequestDto() =
         ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toFunctionDeclarationDto())))
-
 
     companion object {
         private const val USER = "user"
         private const val MODEL = "model"
     }
-
 }

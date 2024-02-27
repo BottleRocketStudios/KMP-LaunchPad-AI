@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0-alpha09"
+agp = "8.4.0-alpha11"
 dokka = "1.9.10"
 kotlin = "1.9.21"
 ktLint-gradle = "11.6.1"
@@ -10,7 +10,7 @@ ksp = "1.9.20-1.0.14"
 # Versioning for build scripts
 compile-sdk = "34"
 min-sdk = "24"
-launchpad-ai = "0.1.0"
+launchpad-ai = "0.0.1"
 
 
 [libraries]
