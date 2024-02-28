@@ -1,8 +1,8 @@
 package com.br.kmplaunchpadai.domain.mediator
 
 import com.br.kmplaunchpadai.data.converters.toDto
+import com.br.kmplaunchpadai.data.converters.toFunctionDeclarationDto
 import com.br.kmplaunchpadai.data.model.ConversationRequestDto
-import com.br.kmplaunchpadai.data.model.FunctionCallDto
 import com.br.kmplaunchpadai.data.model.ToolDto
 import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +51,7 @@ class GeminiMediator {
         }
     }
 
-      private suspend fun callGemini() {
+    private suspend fun callGemini() {
 //        TODO - Add escape logic to prevent infinite loop
 
         geminiService.callGemini(createConversationRequestDto()).onSuccess { response ->
@@ -93,20 +93,16 @@ class GeminiMediator {
 
                 callGemini()
             }
-
         }.onFailure {
             _errorString.value = it.message.toString()
         }
     }
 
-
     private fun createConversationRequestDto() =
-        ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toDto())))
-
+        ConversationRequestDto(conversation.toDto(), listOf(ToolDto(geminiFunctions.toFunctionDeclarationDto())))
 
     companion object {
         private const val USER = "user"
         private const val MODEL = "model"
     }
-
 }

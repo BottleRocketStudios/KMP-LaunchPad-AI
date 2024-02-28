@@ -9,7 +9,7 @@ class GeminiFunction {
     var description: String = ""
     var name: String = ""
     var parameters: List<GeminiParameter> = emptyList()
-    private lateinit var functionReference: KFunction1<Map<String, Any>, Map<String, Any>>
+    private lateinit var functionReference: KFunction1<Map<String, Any>, Map<String, Any>?>
 
     /**
      * Sets the name of the function.
@@ -47,7 +47,7 @@ class GeminiFunction {
      *
      * @param init A lambda that returns the function reference.
      */
-    fun functionReference(init: () -> KFunction1<Map<String, Any>, Map<String, Any>>) {
+    fun functionReference(init: () -> KFunction1<Map<String, Any>, Map<String, Any>?>) {
         functionReference = init()
     }
 
