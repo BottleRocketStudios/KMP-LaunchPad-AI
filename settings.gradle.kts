@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KMP_LaunchPad_AI"
-include(":shared")
+rootProject.name = "LaunchPad_AI"
+include(":kmp-launchpad-ai")
