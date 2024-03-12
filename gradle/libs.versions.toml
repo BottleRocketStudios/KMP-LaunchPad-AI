@@ -1,5 +1,5 @@
 [versions]
-agp = "8.4.0-alpha12"
+agp = "8.4.0-alpha13"
 dokka = "1.9.10"
 kotlin = "1.9.21"
 ktLint-gradle = "11.6.1"

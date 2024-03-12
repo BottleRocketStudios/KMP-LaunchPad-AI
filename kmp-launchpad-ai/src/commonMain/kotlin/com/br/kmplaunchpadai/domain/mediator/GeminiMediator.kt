@@ -5,47 +5,49 @@ import com.br.kmplaunchpadai.data.converters.toFunctionDeclarationDto
 import com.br.kmplaunchpadai.data.model.ConversationRequestDto
 import com.br.kmplaunchpadai.data.model.ToolDto
 import com.br.kmplaunchpadai.data.network.GeminiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class GeminiMediator {
+class GeminiMediator(private val scope: CoroutineScope) {
     // Service
     private val geminiService = GeminiService()
 
     // State
-    private val conversation: MutableList<GeminiContent> = mutableListOf()
     private val geminiFunctions: MutableList<GeminiFunction> = mutableListOf()
     private val mutex = Mutex()
+    private val _conversationFlow = MutableStateFlow(
+        GeminiContent(MODEL, GeminiPart(text = "Welcome to das BOT:"))
+    )
 
     // Input flow
     val user: MutableStateFlow<String> = MutableStateFlow("")
 
     // Output
-    private val _conversationFlow = MutableStateFlow(
-        GeminiContent(MODEL, GeminiPart(text = "Welcome to das BOT:"))
-    )
-    val conversationFlow: StateFlow<GeminiContent> = _conversationFlow
+    val conversation = _conversationFlow
+        .runningFold(emptyList<GeminiContent>()) { accumulator, value -> accumulator + value }
+            .stateIn(scope, SharingStarted.Lazily, emptyList())
 
     private val _errorString: MutableStateFlow<String> = MutableStateFlow("")
     val errorString: StateFlow<String> = _errorString
 
     // Methods
-    operator fun invoke(init: GeminiMediator.() -> Unit) {
-        init()
-    }
+    operator fun invoke(init: GeminiMediator.() -> Unit) = init()
 
-    fun functionDeclaration(init: GeminiFunction.() -> Unit) {
-        val gFunc = GeminiFunction()
-        GeminiFunction().init()
-        geminiFunctions.add(gFunc)
-    }
+    fun functionDeclaration(init: GeminiFunction.() -> Unit) =
+        geminiFunctions.add(GeminiFunction().apply(init))
+
 
     suspend fun startChat() {
         user.collect { userInput ->
             val content = GeminiContent(USER, GeminiPart(text = userInput))
-            conversation.add(content)
             _conversationFlow.emit(content)
             mutex.withLock {
                 callGemini()
@@ -63,19 +65,16 @@ class GeminiMediator {
                     role = "model",
                     part = GeminiPart(text = it)
                 )
-                conversation.add(element)
                 _conversationFlow.value = element
             }
 
             response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.functionCall?.let { functionCall ->
-                conversation.add(
-                    GeminiContent(
-                        role = "model",
-                        part = GeminiPart(
-                            functionCall = GeminiFunctionCall(
-                                name = functionCall.name,
-                                args = functionCall.args
-                            )
+                _conversationFlow.value = GeminiContent(
+                    role = "model",
+                    part = GeminiPart(
+                        functionCall = GeminiFunctionCall(
+                            name = functionCall.name,
+                            args = functionCall.args
                         )
                     )
                 )
@@ -83,14 +82,12 @@ class GeminiMediator {
                 val functionResponse = geminiFunctions.find { it.name == functionCall.name }?.call(
                     functionCall.args
                 )
-                conversation.add(
-                    GeminiContent(
-                        role = "model",
-                        part = GeminiPart(
-                            functionResponse = GeminiResponse(
-                                name = functionCall.name,
-                                content = functionResponse
-                            )
+                _conversationFlow.value = GeminiContent(
+                    role = "model",
+                    part = GeminiPart(
+                        functionResponse = GeminiResponse(
+                            name = functionCall.name,
+                            content = functionResponse
                         )
                     )
                 )
@@ -104,12 +101,12 @@ class GeminiMediator {
 
     private fun createConversationRequestDto() =
         ConversationRequestDto(
-            conversation.toDto(),
+            conversation.value.toDto(),
             listOf(ToolDto(geminiFunctions.toFunctionDeclarationDto()))
         )
 
     companion object {
-        private const val USER = "user"
-        private const val MODEL = "model"
+        const val USER = "user"
+        const val MODEL = "model"
     }
 }
