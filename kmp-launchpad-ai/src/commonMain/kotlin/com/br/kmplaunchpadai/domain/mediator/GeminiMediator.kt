@@ -8,27 +8,33 @@ import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class GeminiMediator(private val scope: CoroutineScope) {
+class GeminiMediator(scope: CoroutineScope, apiKey: String) {
     // Service
-    private val geminiService = GeminiService()
+    private val geminiService = GeminiService(apiKey)
 
     // State
     private val geminiFunctions: MutableList<GeminiFunction> = mutableListOf()
     private val mutex = Mutex()
     private val _conversationFlow = MutableStateFlow(
-        GeminiContent(MODEL, GeminiPart(text = "Welcome to das BOT:"))
+        GeminiContent(STATUS, GeminiPart(text = "Start of Conversation"))
     )
 
     // Input flow
-    val user: MutableStateFlow<String> = MutableStateFlow("")
+    val user: MutableSharedFlow<String> =  MutableSharedFlow()
 
     // Output
     val conversation = _conversationFlow
@@ -46,11 +52,18 @@ class GeminiMediator(private val scope: CoroutineScope) {
 
 
     suspend fun startChat() {
-        user.collect { userInput ->
-            val content = GeminiContent(USER, GeminiPart(text = userInput))
-            _conversationFlow.emit(content)
-            mutex.withLock {
-                callGemini()
+        coroutineScope {
+            launch {
+                user.collect { userInput ->
+                    val content = GeminiContent(USER, GeminiPart(text = userInput))
+                    _conversationFlow.emit(content)
+                }
+            }
+            launch {
+                conversation.collect{
+//                     TODO - Add function response type to list when it is created
+                    if (it.lastOrNull()?.role in listOf(USER)) callGemini()
+                }
             }
         }
     }
@@ -62,7 +75,7 @@ class GeminiMediator(private val scope: CoroutineScope) {
 
             response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text?.let {
                 val element = GeminiContent(
-                    role = "model",
+                    role = MODEL,
                     part = GeminiPart(text = it)
                 )
                 _conversationFlow.value = element
@@ -70,7 +83,7 @@ class GeminiMediator(private val scope: CoroutineScope) {
 
             response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.functionCall?.let { functionCall ->
                 _conversationFlow.value = GeminiContent(
-                    role = "model",
+                    role = MODEL,
                     part = GeminiPart(
                         functionCall = GeminiFunctionCall(
                             name = functionCall.name,
@@ -83,7 +96,7 @@ class GeminiMediator(private val scope: CoroutineScope) {
                     functionCall.args
                 )
                 _conversationFlow.value = GeminiContent(
-                    role = "model",
+                    role = MODEL,
                     part = GeminiPart(
                         functionResponse = GeminiResponse(
                             name = functionCall.name,
@@ -96,17 +109,23 @@ class GeminiMediator(private val scope: CoroutineScope) {
             }
         }.onFailure {
             _errorString.value = it.message.toString()
+            _conversationFlow.value = GeminiContent(
+                role = STATUS,
+                part = GeminiPart(text = "Error: ${it.message}")
+            )
         }
     }
 
     private fun createConversationRequestDto() =
         ConversationRequestDto(
-            conversation.value.toDto(),
+            // Send everything but STATUS messages to server
+            conversation.value.filter { it.role != STATUS }.toDto(),
             listOf(ToolDto(geminiFunctions.toFunctionDeclarationDto()))
         )
 
     companion object {
         const val USER = "user"
         const val MODEL = "model"
+        const val STATUS = "status"
     }
 }

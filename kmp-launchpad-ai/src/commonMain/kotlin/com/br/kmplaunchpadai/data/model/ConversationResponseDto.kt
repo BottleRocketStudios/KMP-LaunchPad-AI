@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ConversationResponseDto(
     @SerialName("candidates") val candidates: List<CandidateDto>,
-    @SerialName("usageMetadata") val usageMetadata: UsageMetadataDto
+    @SerialName("usageMetadata") val usageMetadata: UsageMetadataDto? = null
 ) : Dto

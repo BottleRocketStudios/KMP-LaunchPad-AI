@@ -4,7 +4,7 @@ import com.br.kmplaunchpadai.domain.ExampleFunctions
 import kotlinx.coroutines.MainScope
 
 suspend fun test() {
-    val geminiMediator = GeminiMediator(MainScope())
+    val geminiMediator = GeminiMediator(MainScope(), "KEY")
     geminiMediator {
         functionDeclaration {
             description { "BLA" }
@@ -19,7 +19,7 @@ suspend fun test() {
     }
 
     geminiMediator.startChat()
-    geminiMediator.user.value = "Hi. Are you there???"
+    geminiMediator.user.emit("Hi. Are you there???")
 
 //    geminiMediator.chat("hey bot whats up.")
 //    geminiMediator.response
