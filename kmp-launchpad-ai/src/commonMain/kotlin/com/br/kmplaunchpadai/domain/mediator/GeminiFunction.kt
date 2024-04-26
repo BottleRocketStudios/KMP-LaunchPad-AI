@@ -1,6 +1,12 @@
 package com.br.kmplaunchpadai.domain.mediator
 
+import kotlinx.serialization.json.JsonElement
 import kotlin.reflect.KFunction1
+
+
+typealias GeminiParametersType = Map<String, String>
+typealias GeminiResponseType = JsonElement
+typealias GeminiFunctionType = KFunction1<GeminiParametersType, GeminiResponseType?>
 
 /**
  * Represents a Gemini function.
@@ -9,7 +15,7 @@ class GeminiFunction {
     var description: String = ""
     var name: String = ""
     var parameters: List<GeminiParameter> = emptyList()
-    private lateinit var functionReference: KFunction1<Map<String, Any>, Map<String, Any>?>
+    private lateinit var functionReference: GeminiFunctionType
 
     /**
      * Sets the name of the function.
@@ -47,7 +53,7 @@ class GeminiFunction {
      *
      * @param init A lambda that returns the function reference.
      */
-    fun functionReference(init: () -> KFunction1<Map<String, Any>, Map<String, Any>?>) {
+    fun functionReference(init: () -> GeminiFunctionType) {
         functionReference = init()
     }
 
@@ -56,5 +62,5 @@ class GeminiFunction {
      *
      * @return The result of the function call.
      */
-    fun call(params: Map<String, Any>) = functionReference.invoke(params)
+    fun call(params: GeminiParametersType) = functionReference.invoke(params)
 }
