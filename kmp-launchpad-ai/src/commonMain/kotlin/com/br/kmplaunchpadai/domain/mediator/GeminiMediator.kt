@@ -6,11 +6,14 @@ import com.br.kmplaunchpadai.data.model.ConversationRequestDto
 import com.br.kmplaunchpadai.data.model.ToolDto
 import com.br.kmplaunchpadai.data.network.GeminiService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -54,17 +57,19 @@ class GeminiMediator(scope: CoroutineScope, apiKey: String) {
                 }
             }
             launch {
-                conversation.collect{
-//                     TODO - Add function response type to list when it is created
-                    if (it.lastOrNull()?.role in listOf(USER)) callGemini()
+                conversation.collect {
+                    it.lastOrNull()?.let { last ->
+                        when (last.role) {
+                            USER -> callGemini()
+                            MODEL -> if (last.part?.functionResponse != null) callGemini()
+                        }
+                    }
                 }
             }
         }
     }
 
     private suspend fun callGemini() {
-//        TODO - Add escape logic to prevent infinite loop
-
         geminiService.callGemini(createConversationRequestDto()).onSuccess { response ->
 
             response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text?.let {
@@ -89,6 +94,7 @@ class GeminiMediator(scope: CoroutineScope, apiKey: String) {
                 val functionResponse = geminiFunctions.find { it.name == functionCall.name }?.call(
                     functionCall.args
                 )
+
                 _conversationFlow.value = GeminiContent(
                     role = MODEL,
                     part = GeminiPart(
@@ -99,7 +105,6 @@ class GeminiMediator(scope: CoroutineScope, apiKey: String) {
                     )
                 )
 
-                callGemini()
             }
         }.onFailure {
             _errorString.value = it.message.toString()
