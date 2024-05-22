@@ -1,21 +1,22 @@
 [versions]
-agp = "8.5.0-alpha06"
-dokka = "1.9.10"
-kotlin = "1.9.21"
-ktLint-gradle = "11.6.1"
-kermit = "2.0.2"
-ktor = "2.3.6"
-ksp = "1.9.20-1.0.14"
+#Publishing Version
+launchpad-ai = "0.1.0"
 
-# Versioning for build scripts
+# Android SDK versions
 compile-sdk = "34"
 min-sdk = "24"
-#launchpad-ai = "0.0.2"
-launchpad-ai = "snapshot"
+
+# Dependcy versions
+agp = "8.5.0-beta02"
+dokka = "1.9.10"
+kotlin = "1.9.22"
+ktLint-gradle = "11.6.1"
+ktor = "2.3.10"
+ksp = "1.9.22-1.0.17"
+
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 ktor = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }

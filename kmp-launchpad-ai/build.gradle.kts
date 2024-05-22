@@ -13,13 +13,9 @@ kotlin {
 
     androidTarget {
         publishAllLibraryVariants()
-
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
-            }
-        }
     }
+    jvmToolchain(17)
+    jvm("desktop")
 
     iosX64()
     iosArm64()
@@ -27,8 +23,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kermit)
-
             implementation(libs.ktor)
             implementation(libs.ktor.content.negotiation)
             implementation(libs.ktor.logging)
@@ -72,8 +66,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/BottleRocketStudios/KMP-LaunchPad-AI")
             credentials {
-                username = System.getenv("REPO_READ_WRITE_USER")
-                password = System.getenv("REPO_READ_WRITE_TOKEN")
+                username = System.getenv("REPO_READ_WRITE_USER") ?: System.getenv("GH_PUBLISH_USERNAME")
+                password = System.getenv("REPO_READ_WRITE_TOKEN") ?: System.getenv("GH_PUBLISH_PASSWORD")
             }
         }
     }
