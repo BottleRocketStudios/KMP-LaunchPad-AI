@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FunctionCallDto(
+    @SerialName("name") val name: String,
     @SerialName("args") val args: Map<String, String>,
-    @SerialName("name") val name: String
 ) : Dto

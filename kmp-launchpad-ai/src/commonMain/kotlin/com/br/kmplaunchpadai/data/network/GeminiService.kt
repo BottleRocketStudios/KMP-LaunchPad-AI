@@ -8,17 +8,13 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class GeminiService {
+class GeminiService(private var apiKey: String = "KEY_NOT_INITIALIZED") {
     private val client = ktorClient()
-    companion object {
-//        FIXME - USe Build config to drive API key
-        private const val API_KEY: String = "DUNNO_YET"
-        private const val URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$API_KEY"
-    }
+    private val url get() = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=$apiKey"
 
     suspend fun callGemini(payload: ConversationRequestDto): Result<ConversationResponseDto> =
         runCatching {
-            client.post(URL) {
+            client.post(url) {
                 contentType(ContentType.Application.Json)
                 setBody(payload)
             }.body<ConversationResponseDto>()

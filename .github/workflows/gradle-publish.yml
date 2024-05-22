@@ -10,13 +10,12 @@ name: Gradle Package
 on:
   push:
     branches: [ "deploy" ]
-#  pull_request:
-#    branches: [ "deploy" ]
 
 jobs:
-  build:
 
+  build:
     runs-on: macOS-latest
+    timeout-minutes: 30
     permissions:
       contents: read
       packages: write
@@ -35,6 +34,9 @@ jobs:
         uses: gradle/gradle-build-action@v2.11.0
         with:
           arguments: build
+        env:
+          GH_READ_USERNAME: ${{ secrets.REPO_READ_USER }}
+          GH_READ_PASSWORD: ${{ secrets.REPO_READ_TOKEN }}
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
@@ -43,4 +45,5 @@ jobs:
         with:
           arguments: publish
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PUBLISH_USERNAME: ${{ secrets.REPO_READ_WRITE_USER }}
+          GH_PUBLISH_PASSWORD: ${{ secrets.REPO_READ_WRITE_TOKEN }}
